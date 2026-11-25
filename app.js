@@ -2,6 +2,21 @@
 // ใส่ลิงก์ Google Sheet ที่ "เผยแพร่ไปยังเว็บ > CSV" ตรงนี้ (เว้นว่างไว้ = ใช้ไฟล์ data/products.csv สำรอง)
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzp7hV_EU6KW1rsD134ng2ItAjlUX_IjZiWfXlc422dR3RDVailHlm38SR20gdWj-_7C16FIG2WKvL/pub?gid=1955184043&single=true&output=csv";
 const LOCAL_CSV = "data/products.csv";
+// ลิงก์ Web App ของ Google Apps Script (ใช้ตัดสต็อกในชีต) – เว้นว่างไว้ = ไม่ตัดสต็อก
+const APPS_SCRIPT_URL = "";
+
+// ส่งรายการที่สั่งไปให้ชีตลดสต็อก
+function sendStock(id, items) {
+  if (!APPS_SCRIPT_URL) return;
+  try {
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ id, items: items.map((i) => ({ sku: i.sku, qty: i.qty })) }),
+    });
+  } catch (e) { /* ไม่ให้การสั่งซื้อล้มเหลวถ้าตัดสต็อกไม่ได้ */ }
+}
 const SHOP = {
   name: "บะหมี่ซด ซด",
   address: "99/9 ถ.สุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพฯ 10110",
@@ -67,4 +82,3 @@ const getOrders = () => { try { return JSON.parse(localStorage.getItem(ORDER_KEY
 const saveOrders = (o) => localStorage.setItem(ORDER_KEY, JSON.stringify(o));
 const baht = (n) => n.toLocaleString("th-TH") + " บาท";
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
-
