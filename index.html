@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>บะหมี่ซด ซด – บะหมี่กึ่งสำเร็จรูปรสเด็ด ส่งถึงบ้าน</title>
+<meta name="description" content="สั่งบะหมี่กึ่งสำเร็จรูปรสหมูแดง ต้มยำกุ้ง เกี๊ยวกรอบ ส่งไว ราคาถูก">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="logo" href="#">🍜 บะหมี่ซด ซด</a>
+  <nav><a class="link" href="#products">สินค้า</a><a class="link" href="#order">สั่งซื้อ</a><a class="link" href="pack.html">หลังบ้าน (แพ็คของ)</a></nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <h1>บะหมี่กึ่งสำเร็จรูป<br>อร่อยเด็ด พร้อมซดใน 3 นาที</h1>
+  <p>เส้นเหนียวนุ่ม ซุปเข้มข้น เลือกได้ 3 รสชาติ แพ็คอย่างดี ส่งถึงหน้าบ้านคุณ</p>
+  <a class="btn" href="#products">เลือกสินค้าเลย</a>
+</div></div>
+
+<section><div class="wrap feat">
+  <div>⚡ <b>เสร็จใน 3 นาที</b><br>แค่เติมน้ำร้อน พร้อมทานทันที</div>
+  <div>🌶️ <b>3 รสชาติ</b><br>หมูแดง ต้มยำกุ้ง เกี๊ยวกรอบ</div>
+  <div>📦 <b>แพ็คแน่นหนา</b><br>ตรวจสินค้าทุกออเดอร์ก่อนส่ง</div>
+</div></section>
+
+<section id="products" style="padding-top:0"><div class="wrap">
+  <h2>สินค้าของเรา</h2>
+  <div class="grid" id="grid"><p>กำลังโหลดสินค้า...</p></div>
+</div></section>
+
+<section id="order" style="background:#fff3e3"><div class="wrap" style="max-width:640px">
+  <h2>สั่งซื้อ</h2>
+  <form class="order" id="form">
+    <div class="summary"><span id="sumItems">ยังไม่ได้เลือกสินค้า</span><span id="sumTotal">0 บาท</span></div>
+    <label>ชื่อผู้รับ<input name="name" required></label>
+    <div class="row2">
+      <label>เบอร์โทร<input name="phone" required pattern="[0-9\-]{9,12}" inputmode="tel"></label>
+      <label>รหัสไปรษณีย์<input name="zip" required pattern="[0-9]{5}" inputmode="numeric"></label>
+    </div>
+    <label>ที่อยู่จัดส่ง<textarea name="address" rows="3" required></textarea></label>
+    <button class="btn" type="submit">ยืนยันสั่งซื้อ</button>
+    <div class="msg" id="msg"></div>
+  </form>
+</div></section>
+
+<footer><div class="wrap">© 2026 บะหมี่ซด ซด · โทร 081-234-5678</div></footer>
+
+<script src="app.js"></script>
+<script>
+let products = [];
+const cart = {};
+const grid = document.getElementById("grid");
+
+function render() {
+  grid.innerHTML = products.map((p) => `
+    <div class="card">
+      <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">
+      <div class="body">
+        <span class="sku">${esc(p.sku)}</span>
+        <h3>${esc(p.name)}</h3>
+        <div>${esc(p.desc)}</div>
+        <div class="price">${baht(p.price)} <small style="font-size:13px;color:#8a6f5b">/ ซอง</small></div>
+        <div class="qty">
+          <button type="button" data-sku="${esc(p.sku)}" data-d="-1">−</button>
+          <input type="number" min="0" max="${p.stock}" value="${cart[p.sku] || 0}" data-sku="${esc(p.sku)}" aria-label="จำนวน">
+          <button type="button" data-sku="${esc(p.sku)}" data-d="1">+</button>
+        </div>
+      </div>
+    </div>`).join("");
+  summary();
+}
+
+function setQty(sku, v) {
+  const p = products.find((x) => x.sku === sku);
+  v = Math.max(0, Math.min(p.stock, Math.floor(v) || 0));
+  if (v) cart[sku] = v; else delete cart[sku];
+  render();
+}
+
+grid.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-d]");
+  if (b) setQty(b.dataset.sku, (cart[b.dataset.sku] || 0) + Number(b.dataset.d));
+});
+grid.addEventListener("change", (e) => {
+  if (e.target.matches("input[data-sku]")) setQty(e.target.dataset.sku, Number(e.target.value));
+});
+
+function summary() {
+  const items = products.filter((p) => cart[p.sku]);
+  const n = items.reduce((s, p) => s + cart[p.sku], 0);
+  const total = items.reduce((s, p) => s + cart[p.sku] * p.price, 0);
+  document.getElementById("sumItems").textContent = n ? `${n} ซอง (${items.length} รายการ)` : "ยังไม่ได้เลือกสินค้า";
+  document.getElementById("sumTotal").textContent = baht(total);
+}
+
+document.getElementById("form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const items = products.filter((p) => cart[p.sku]).map((p) => ({ sku: p.sku, name: p.name, price: p.price, qty: cart[p.sku] }));
+  const msg = document.getElementById("msg");
+  if (!items.length) { msg.style.display = "block"; msg.style.background = "#fde2e0"; msg.style.color = "#a02218"; msg.textContent = "กรุณาเลือกสินค้าอย่างน้อย 1 รายการ"; return; }
+  const f = new FormData(e.target);
+  const orders = getOrders();
+  const id = "ORD" + String(orders.length + 1).padStart(4, "0");
+  orders.push({
+    id, items, status: "pending", created: new Date().toISOString(),
+    customer: { name: f.get("name"), phone: f.get("phone"), zip: f.get("zip"), address: f.get("address") },
+    total: items.reduce((s, i) => s + i.qty * i.price, 0),
+  });
+  saveOrders(orders);
+  Object.keys(cart).forEach((k) => delete cart[k]);
+  e.target.reset(); render();
+  msg.style.display = "block"; msg.style.background = "#e6f6ea"; msg.style.color = "#1e6b34";
+  msg.textContent = `สั่งซื้อสำเร็จ! เลขออเดอร์ ${id} — ดูรายการหยิบ/แพ็คได้ที่หน้า "หลังบ้าน"`;
+});
+
+loadProducts().then((p) => { products = p; render(); })
+  .catch(() => { grid.innerHTML = "<p>โหลดข้อมูลสินค้าไม่สำเร็จ</p>"; });
+</script>
+</body>
+</html>
