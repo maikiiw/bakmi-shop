@@ -3,7 +3,7 @@
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzp7hV_EU6KW1rsD134ng2ItAjlUX_IjZiWfXlc422dR3RDVailHlm38SR20gdWj-_7C16FIG2WKvL/pub?gid=1955184043&single=true&output=csv";
 const LOCAL_CSV = "data/products.csv";
 // ลิงก์ Web App ของ Google Apps Script (ใช้ตัดสต็อกในชีต) – เว้นว่างไว้ = ไม่ตัดสต็อก
-const APPS_SCRIPT_URL = "";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9rMubqARYJrL0NKvSqsm_g1Li__P2qa5uvxy6ehmEzq1u9wa-isLB5Id0b8cawlIvHg/exec";
 
 // ส่งรายการที่สั่งไปให้ชีตลดสต็อก
 function sendStock(id, items) {
