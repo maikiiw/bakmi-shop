@@ -110,6 +110,7 @@ document.getElementById("form").addEventListener("submit", (e) => {
     total: items.reduce((s, i) => s + i.qty * i.price, 0),
   });
   saveOrders(orders);
+  sendStock(id, items);
   Object.keys(cart).forEach((k) => delete cart[k]);
   e.target.reset(); render();
   msg.style.display = "block"; msg.style.background = "#e6f6ea"; msg.style.color = "#1e6b34";
